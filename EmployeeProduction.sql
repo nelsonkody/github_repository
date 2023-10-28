@@ -18,13 +18,13 @@ SUM(rd.Feet) [Feet]
 ,CASE WHEN (r.ReleasedRouteMiles) IS NULL THEN 0 ELSE r.ReleasedRouteMiles END AS ReleasedRouteMiles
 
 	INTO #feet
-	FROM TicketHistory th (NOLOCK)
-	JOIN dbo.tblResponseDetail rd (NOLOCK) ON th.TicketHistoryID=rd.TicketID
-	JOIN dbo.Employee e (NOLOCK) ON th.EmployeeID = e.EmployeeID
-	JOIN dbo.ProfitCenter pc (NOLOCK) ON th.ProfitCenterID = pc.ProfitCenterID
-	JOIN dbo.State s (NOLOCK) ON pc.StateID = s.StateID
+	FROM Banana th (NOLOCK)
+	JOIN dbo.Apple rd (NOLOCK) ON th.TicketHistoryID=rd.TicketID
+	JOIN dbo.Orange e (NOLOCK) ON th.EmployeeID = e.EmployeeID
+	JOIN dbo.Kiwi pc (NOLOCK) ON th.ProfitCenterID = pc.ProfitCenterID
+	JOIN dbo.Pear s (NOLOCK) ON pc.StateID = s.StateID
 	--JOIN dbo.DLS dls (NOLOCK) ON dls.DLSID = th.DLSID
-	JOIN dbo.DLSRoute r (NOLOCK) ON r.DLSID = th.DLSID
+	JOIN dbo.Mango r (NOLOCK) ON r.DLSID = th.DLSID
 
 	WHERE th.WorkComplete BETWEEN @start AND dbo.DatetoEndofDay(@end)
 	AND th.ProfitCenterID IN (@pcid)
@@ -68,7 +68,7 @@ SUM(rd.Feet) [Feet]
 	SELECT ROW_NUMBER() OVER (PARTITION BY EmployeeID, CONVERT(DATE, CreatedDate) ORDER BY CreatedDate) AS rn,
 VehicleInformationID, EmployeeID, VehicleNumber, Mileage, CreatedDate
 INTO #temp1
-FROM dbo.EmployeeVehicleHistory (NOLOCK)
+FROM dbo.Pineapple (NOLOCK)
 WHERE CreatedDate BETWEEN @start and DATEADD(DAY, 7, dbo.DatetoEndofDay(@end))
 ---need to grab extra days of information incase a long weekend or vacation sine last odometer check in
 
@@ -132,10 +132,10 @@ CASE
     ELSE p.DailyRevenue / p.DailyPay
     END AS RevenueToPayRatio
 
-	FROM Production p (NOLOCK) 
-	JOIN Employee e (NOLOCK) ON p.EmployeeID = e.EmployeeID
-	JOIN dbo.ProfitCenter pc (NOLOCK) ON p.ProfitCenterID = pc.ProfitCenterID
-	JOIN dbo.State s (NOLOCK) ON pc.StateID = s.StateID
+	FROM Blueberry p (NOLOCK) 
+	JOIN Orange e (NOLOCK) ON p.EmployeeID = e.EmployeeID
+	JOIN dbo.Kiwi pc (NOLOCK) ON p.ProfitCenterID = pc.ProfitCenterID
+	JOIN dbo.Pear s (NOLOCK) ON pc.StateID = s.StateID
     JOIN #feet2 f ON f.EmployeeID = e.EmployeeID AND p.WorkDay = f.WorkDay --AND p.ProfitCenterID = r.ProfitCenterID
 	LEFT JOIN #temp4 m ON p.EmployeeID = m.EmployeeID AND CONVERT(DATE, p.WorkDay) = m.[Mileage Date]
 	--JOIN dbo.DLS dls ON dls.EmployeeID = f.EmployeeID AND dls.ReleaseDate = f.WorkDay
